@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/fa74da70-0a84-4ec3-aaae-1b583658c10d/resourceGroups/appsvc_linux_southafricanorth/providers/Microsoft.Web/sites/lms",
+    "appService.deploySubpath": "."
+}

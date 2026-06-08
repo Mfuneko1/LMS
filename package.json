@@ -1,0 +1,13 @@
+{
+  "name": "loan-shark-management",
+  "version": "1.0.0",
+  "description": "Mini loan shark management system for tracking loans, interest, repayment and payments.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.4",
+    "sqlite3": "^5.1.7"
+  }
+}
