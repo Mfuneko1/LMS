@@ -19,7 +19,7 @@ A small loan tracking app to capture borrower details, calculate 35% interest, s
 3. Start the app with `npm start`.
 4. Open `http://localhost:4000` in your browser.
 
-## Notes
+## Notes: to do
 
 - Data is stored in Azure SQL when the above Azure SQL environment variables are configured.
 - The frontend is served from the `public/` directory.
