@@ -22,4 +22,5 @@ A small loan tracking app to capture borrower details, calculate 35% interest, s
 ## Notes: to do
 
 - Data is stored in Azure SQL when the above Azure SQL environment variables are configured.
+- Data curretly stored using sqllite 3
 - The frontend is served from the `public/` directory.
