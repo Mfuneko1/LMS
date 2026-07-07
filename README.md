@@ -56,5 +56,6 @@ The server creates the `loans` and `payments` tables automatically if they do no
 
 ## Notes: to do
 
-- Data is stored in Azure SQL using the above Azure SQL environment variables.
+- Data is stored in Azure SQL when the above Azure SQL environment variables are configured.
+- Data curretly stored using sqllite 3
 - The frontend is served from the `public/` directory.
