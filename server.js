@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const crypto = require('crypto');
 require('dotenv').config({ quiet: true });
 const sql = require('mssql');
 
@@ -30,6 +31,13 @@ const dbConfig = {
 };
 
 let pool;
+
+const authConfig = {
+  username: process.env.APP_LOGIN_USER || 'admin',
+  password: process.env.APP_LOGIN_PASSWORD || 'admin123',
+  secret: process.env.APP_SESSION_SECRET || 'creditflow-local-session-secret',
+  cookieName: 'creditflow_session'
+};
 
 const ensureEnv = () => {
   const missing = requiredEnv.filter(name => !process.env[name]);
@@ -102,8 +110,120 @@ const formatLoan = (loan) => ({
   profit: Number(((Number(loan.totalDue) || 0) - (Number(loan.amountBorrowed) || 0)).toFixed(2))
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
+const parseCookies = (cookieHeader = '') => cookieHeader
+  .split(';')
+  .map(cookie => cookie.trim())
+  .filter(Boolean)
+  .reduce((cookies, cookie) => {
+    const separatorIndex = cookie.indexOf('=');
+    if (separatorIndex === -1) return cookies;
+    const key = decodeURIComponent(cookie.slice(0, separatorIndex));
+    const value = decodeURIComponent(cookie.slice(separatorIndex + 1));
+    cookies[key] = value;
+    return cookies;
+  }, {});
+
+const signSession = (username) => {
+  const issuedAt = Date.now().toString();
+  const payload = `${username}:${issuedAt}`;
+  const signature = crypto
+    .createHmac('sha256', authConfig.secret)
+    .update(payload)
+    .digest('hex');
+
+  return Buffer.from(`${payload}:${signature}`).toString('base64url');
+};
+
+const verifySession = (token) => {
+  if (!token) return false;
+
+  try {
+    const decoded = Buffer.from(token, 'base64url').toString('utf8');
+    const [username, issuedAt, signature] = decoded.split(':');
+    if (!username || !issuedAt || !signature) return false;
+
+    const payload = `${username}:${issuedAt}`;
+    const expectedSignature = crypto
+      .createHmac('sha256', authConfig.secret)
+      .update(payload)
+      .digest('hex');
+
+    const validSignature = crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(expectedSignature)
+    );
+    const maxAgeMs = 1000 * 60 * 60 * 12;
+
+    return validSignature && username === authConfig.username && Date.now() - Number(issuedAt) < maxAgeMs;
+  } catch (err) {
+    return false;
+  }
+};
+
+const isAuthenticated = (req) => {
+  const cookies = parseCookies(req.headers.cookie);
+  return verifySession(cookies[authConfig.cookieName]);
+};
+
+const requireAuth = (req, res, next) => {
+  if (isAuthenticated(req)) return next();
+  if (req.path.startsWith('/api/')) return res.status(401).json({ error: 'Authentication required.' });
+  const redirectTo = encodeURIComponent(req.originalUrl || '/');
+  return res.redirect(`/login.html?redirect=${redirectTo}`);
+};
+
+const setSessionCookie = (res, token) => {
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  res.setHeader(
+    'Set-Cookie',
+    `${authConfig.cookieName}=${encodeURIComponent(token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=43200${secure}`
+  );
+};
+
+const clearSessionCookie = (res) => {
+  res.setHeader(
+    'Set-Cookie',
+    `${authConfig.cookieName}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`
+  );
+};
+
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (username !== authConfig.username || password !== authConfig.password) {
+    return res.status(401).json({ error: 'Invalid username or password.' });
+  }
+
+  setSessionCookie(res, signSession(username));
+  res.json({ username });
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  clearSessionCookie(res);
+  res.json({ success: true });
+});
+
+app.get('/api/auth/session', (req, res) => {
+  if (!isAuthenticated(req)) return res.status(401).json({ authenticated: false });
+  res.json({ authenticated: true, username: authConfig.username });
+});
+
+app.use((req, res, next) => {
+  const publicPaths = ['/login.html', '/scripts/login.js', '/style.css'];
+  const isPublicPath = publicPaths.includes(req.path);
+  const isPublicAsset = /\.(css|js|png|jpg|jpeg|gif|svg|ico|webp)$/i.test(req.path);
+
+  if (isPublicPath || isPublicAsset) return next();
+  if (req.path === '/' || req.path.endsWith('.html') || req.path.startsWith('/api/')) {
+    return requireAuth(req, res, next);
+  }
+
+  return next();
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 // List loans
 app.get('/api/loans', async (req, res) => {
@@ -350,7 +470,7 @@ app.get('/api/summary', async (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
+app.get('*', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

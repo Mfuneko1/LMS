@@ -28,3 +28,11 @@ var menuToggle = document.getElementById('menuToggle');
   if (backdrop) {
     backdrop.addEventListener('click', closeSidebar);
   }
+
+  document.querySelectorAll('[data-logout]').forEach(function (button) {
+    button.addEventListener('click', async function () {
+      button.disabled = true;
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = 'login.html';
+    });
+  });

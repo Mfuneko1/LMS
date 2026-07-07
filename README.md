@@ -20,6 +20,17 @@ A small loan tracking app to capture borrower details, calculate 35% interest, s
 4. Start the app with `npm start`.
 5. Open `http://localhost:4000` in your browser.
 
+## Login
+
+The app opens on a login screen before any loan pages or APIs are available. For local development, the default credentials are:
+
+```env
+APP_LOGIN_USER=admin
+APP_LOGIN_PASSWORD=admin123
+```
+
+Set `APP_SESSION_SECRET` in `.env` when deploying so login cookies are signed with your own secret.
+
 ## Azure SQL configuration
 
 The API uses Azure SQL through the `mssql` package. The server loads these values from `.env` when it starts:
