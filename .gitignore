@@ -2,6 +2,7 @@ node_modules/
 loans.db
 npm-debug.log*
 .DS_Store
+server.js
 
 # wrangler files
 .wrangler

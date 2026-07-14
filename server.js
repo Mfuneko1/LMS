@@ -33,8 +33,8 @@ const dbConfig = {
 let pool;
 
 const authConfig = {
-  username: process.env.APP_LOGIN_USER || 'admin',
-  password: process.env.APP_LOGIN_PASSWORD || 'admin123',
+  username: process.env.APP_LOGIN_USER || 'loanmanagement',
+  password: process.env.APP_LOGIN_PASSWORD || 'Esihle2024',
   secret: process.env.APP_SESSION_SECRET || 'creditflow-local-session-secret',
   cookieName: 'creditflow_session'
 };
@@ -390,7 +390,7 @@ app.get('/api/payments', async (req, res) => {
         l.paidAmount
       FROM dbo.payments p
       JOIN dbo.loans l ON p.loanId = l.id
-      ORDER BY p.date DESC
+      ORDER BY p.date, l.isPaid DESC
     `);
 
     res.json(result.recordset.map(payment => ({
