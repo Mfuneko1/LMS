@@ -23,11 +23,7 @@ A small loan tracking app to capture borrower details, calculate 35% interest, s
 ## Login
 
 The app opens on a login screen before any loan pages or APIs are available. For local development, the default credentials are:
-
-```env
-APP_LOGIN_USER=admin
-APP_LOGIN_PASSWORD=admin123
-```
+-- sorry you'll have to figure this one out
 
 Set `APP_SESSION_SECRET` in `.env` when deploying so login cookies are signed with your own secret.
 
@@ -45,7 +41,7 @@ AZURE_SQL_PASSWORD=your-sql-password
 Optional values:
 
 ```env
-AZURE_SQL_PORT=1433
+AZURE_SQL_PORT=1234
 AZURE_SQL_ENCRYPT=true
 AZURE_SQL_TRUST_CERT=false
 ```
@@ -57,5 +53,4 @@ The server creates the `loans` and `payments` tables automatically if they do no
 ## Notes: to do
 
 - Data is stored in Azure SQL when the above Azure SQL environment variables are configured.
-- Data curretly stored using sqllite 3
 - The frontend is served from the `public/` directory.
