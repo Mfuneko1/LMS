@@ -408,7 +408,7 @@ app.get('/api/payments', async (req, res) => {
   }
 });
 
-// Summary
+// Summary end-point
 app.get('/api/summary', async (req, res) => {
   try {
     const now = new Date();

@@ -11,6 +11,8 @@ const normalizeDate = (value) => {
 
 const getPaymentFilter = () => document.getElementById('filterDate')?.value.trim() || '';
 
+
+
 const matchesPaymentFilter = (payment, filterValue) => {
   if (!filterValue) return true;
   return normalizeDate(payment.date).startsWith(filterValue);
@@ -63,9 +65,8 @@ const loadPayments = async () => {
       paymentsBody.appendChild(row);
     });
   };
-  
+
   const refreshData = async () => {
     await Promise.all([loadPayments()]);
   };
-
   refreshData();
