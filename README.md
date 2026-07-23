@@ -16,11 +16,41 @@ A small loan tracking app to capture borrower details, calculate 35% interest, s
 
 1. Open a terminal in this folder.
 2. Run `npm install`.
-3. Start the app with `npm start`.
-4. Open `http://localhost:4000` in your browser.
+3. Add your Azure SQL connection values to `.env`.
+4. Start the app with `npm start`.
+5. Open `http://localhost:4000` in your browser.
+
+## Login
+
+The app opens on a login screen before any loan pages or APIs are available. For local development, the default credentials are:
+-- sorry you'll have to figure this one out
+
+Set `APP_SESSION_SECRET` in `.env` when deploying so login cookies are signed with your own secret.
+
+## Azure SQL configuration
+
+The API uses Azure SQL through the `mssql` package. The server loads these values from `.env` when it starts:
+
+```env
+AZURE_SQL_SERVER=your-server.database.windows.net
+AZURE_SQL_DATABASE=your-database-name
+AZURE_SQL_USER=your-sql-user
+AZURE_SQL_PASSWORD=your-sql-password
+```
+
+Optional values:
+
+```env
+AZURE_SQL_PORT=1234
+AZURE_SQL_ENCRYPT=true
+AZURE_SQL_TRUST_CERT=false
+```
+
+Use `.env.example` as the template. The real `.env` file is ignored by git so database credentials stay local.
+
+The server creates the `loans` and `payments` tables automatically if they do not already exist.
 
 ## Notes: to do
 
 - Data is stored in Azure SQL when the above Azure SQL environment variables are configured.
-- Data curretly stored using sqllite 3
 - The frontend is served from the `public/` directory.
