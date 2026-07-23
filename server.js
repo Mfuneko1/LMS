@@ -5,7 +5,7 @@ require('dotenv').config({ quiet: true });
 const sql = require('mssql');
 
 const app = express();
-
+debugger
 const requiredEnv = [
   'AZURE_SQL_SERVER',
   'AZURE_SQL_DATABASE',
@@ -409,7 +409,16 @@ app.get('/api/payments', async (req, res) => {
 });
 
 // Summary end-point
+debugger
 app.get('/api/summary', async (req, res) => {
+  debugger
+
+
+console.log("here: " + process.env.AZURE_SQL_SERVER);
+console.log("here1: " + process.env.AZURE_SQL_DATABASE);
+console.log("here2: " + process.env.AZURE_SQL_USER);
+console.log("here3: " + process.env.AZURE_SQL_PASSWORD);
+
   try {
     const now = new Date();
     const currentMonth = now.getMonth() + 1;

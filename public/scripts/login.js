@@ -32,6 +32,12 @@ loginForm.addEventListener('submit', async (event) => {
   const formData = new FormData(loginForm);
 
   try {
+
+    console.log("here: " + process.env.AZURE_SQL_SERVER);
+    console.log("here1: " + process.env.AZURE_SQL_DATABASE);
+    console.log("here2: " + process.env.AZURE_SQL_USER);
+    console.log("here3: " + process.env.AZURE_SQL_PASSWORD);
+
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

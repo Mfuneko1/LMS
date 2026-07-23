@@ -11,7 +11,10 @@ const normalizeDate = (value) => {
 
 const getPaymentFilter = () => document.getElementById('filterDate')?.value.trim() || '';
 
-
+console.log("here: " + process.env.AZURE_SQL_SERVER);
+console.log("here1: " + process.env.AZURE_SQL_DATABASE);
+console.log("here2: " + process.env.AZURE_SQL_USER);
+console.log("here3: " + process.env.AZURE_SQL_PASSWORD);
 
 const matchesPaymentFilter = (payment, filterValue) => {
   if (!filterValue) return true;
